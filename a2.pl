@@ -39,7 +39,7 @@ birth_date(pat, 1907).
 birth_date(henry, 1910).
 birth_date(paula, 1912).
 birth_date(bob, 1930).
-birth_date(sue, 1926).
+birth_date(sue, 1930).
 birth_date(david, 1902).
 birth_date(mary, 1905).
 birth_date(charlie,1880).
@@ -53,6 +53,23 @@ birth_date(rachel, 1962).
 birth_date(sophia, 1990).
 birth_date(tina, 1992).
 birth_date(uma, 1995).
+
+% dead or alive facts
+dead(john).
+dead(liz).
+dead(mike).
+dead(ann).
+dead(tom).
+dead(pat).
+dead(david).
+dead(mary).
+dead(charlie).
+dead(olivia).   
+dead(alex).
+dead(kate).
+dead(henry).
+dead(paula).
+dead(bob).
 
 
 % marriage facts
@@ -153,4 +170,9 @@ divorced(david, mary, 1960).
 currently_married(X, Y) :- married(X, Y), \+ divorced(X, Y, _).
 currently_married(X, Y) :- married(Y, X), \+ divorced(Y, X, _).
 
-?- currently_married(tom, pat).
+% alive predicate
+alive(X) :- \+ dead(X).
+
+% widow/widower predicate
+widow(X) :- female(X), (married(X, Y);married(Y, X)), dead(Y).
+widower(X) :- male(X), (married(X, Y);married(Y, X)), dead(Y).
