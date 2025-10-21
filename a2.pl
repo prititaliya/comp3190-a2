@@ -28,29 +28,32 @@ female(tina).
 female(uma).
 
 % birth date facts
-birth_date(john, 1950).
-birth_date(liz, 1952).
-birth_date(mike, 1975).
-birth_date(ann, 1978).
-birth_date(tom, 1980).
-birth_date(pat, 1982).
-birth_date(bob, 2005).
-birth_date(sue, 2007).
-birth_date(alex, 2010).
-birth_date(kate, 2012).
-birth_date(charlie, 2008).
-birth_date(mary, 1985).
-birth_date(david, 1983).
-birth_date(nina, 2015).
-birth_date(george, 2018).
-birth_date(olivia, 2020).
-birth_date(henry, 2013).
-birth_date(paula, 1988).
-birth_date(rachel, 1990).
-birth_date(ian, 2016).
-birth_date(sophia, 2019).
-birth_date(tina, 2021).
-birth_date(uma, 2022).
+birth_date(john, 1860).
+birth_date(liz, 1862).
+birth_date(alex, 1863).
+birth_date(kate, 1865).
+birth_date(mike, 1885).
+birth_date(ann, 1887).
+birth_date(tom, 1905).
+birth_date(pat, 1907).
+birth_date(henry, 1910).
+birth_date(paula, 1912).
+birth_date(bob, 1930).
+birth_date(sue, 1926).
+birth_date(david, 1902).
+birth_date(mary, 1905).
+birth_date(charlie,1880).
+birth_date(olivia, 1882).
+birth_date(george, 1935).
+birth_date(nina, 1938).
+
+birth_date(ian, 1960).
+birth_date(rachel, 1962).
+
+birth_date(sophia, 1990).
+birth_date(tina, 1992).
+birth_date(uma, 1995).
+
 
 % marriage facts
 married(john, liz).
@@ -59,24 +62,58 @@ married(tom, pat).
 married(david, mary).
 married(bob, sue).
 married(alex, kate).
+married(charlie, olivia).
+married(henry, paula).
+married(george,nina).
+married(ian, rachel).
 
 % parent-child relationships
 parent(john, mike).
 parent(liz, mike).
-parent(john, ann).
-parent(liz, ann).
+
 parent(mike, tom).
 parent(ann, tom).
-parent(mike, pat).
-parent(ann, pat).
+
 parent(tom, bob).
 parent(pat, bob).
-parent(tom, sue).
-parent(pat, sue).
+
 parent(david, nina).
 parent(mary, nina).
+
 parent(david, george).
 parent(mary, george).
+
+parent(alex, ann).
+parent(kate, ann).
+
+parent(david, sue).
+parent(mary, sue).
+
+parent(charlie, pat).
+parent(olivia, pat).
+
+parent(john, henry).
+parent(liz, henry).
+
+parent(alex, paula).
+parent(kate, paula).
+
+parent(henry, ian).
+parent(paula, ian).
+
+parent(david, george).
+parent(mary, george).
+
+parent(bob, sophia).
+parent(sue, sophia).
+
+parent(george, tina).
+parent(nina, tina).
+
+parent(george, uma).
+parent(nina, uma).
+
+
 
 % grandparent relationships
 grandparent(X, Y) :- parent(X, Z), parent(Z, Y).
@@ -95,3 +132,25 @@ aunt(X, Y) :- female(X), sibling(X, Z), parent(Z, Y).
 % cousin relationships
 cousin(X, Y) :- parent(Z, X), parent(W, Y), sibling(Z, W).
 
+% in-law relationships
+father_in_law(X, Y) :- male(X), married(Y, Z), parent(X, Z).
+mother_in_law(X, Y) :- female(X), married(Y, Z), parent(X, Z).
+
+% age comparison
+older(X, Y) :- birth_date(X, DX), birth_date(Y, DY), DX < DY.
+younger(X, Y) :- birth_date(X, DX), birth_date(Y, DY), DX > DY. 
+
+current_year(2025).
+age(X, Age) :- birth_date(X, BirthYear), current_year(CurrentYear), Age is CurrentYear - BirthYear.
+
+
+% divorce facts
+divorced(mike, ann, 1920).
+divorced(tom, pat, 1935).
+divorced(david, mary, 1960).
+
+% currently married predicate
+currently_married(X, Y) :- married(X, Y), \+ divorced(X, Y, _).
+currently_married(X, Y) :- married(Y, X), \+ divorced(Y, X, _).
+
+?- currently_married(tom, pat).
