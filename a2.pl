@@ -136,43 +136,105 @@ parent(nina, uma).
 grandparent(X, Y) :- parent(X, Z), parent(Z, Y).
 grandmother(X, Y) :- female(X), grandparent(X, Y).
 grandfather(X, Y) :- male(X), grandparent(X, Y).
+% grandmother(liz, tom).
+% grandfather(john, henry). 
 
 % sibling relationships
-sibling(X, Y) :- parent(Z, X), parent(Z, Y), X \= Y.
-brother(X, Y) :- male(X), sibling(X, Y).
-sister(X, Y) :- female(X), sibling(X, Y).   
+sibling(X, Y) :- parent(Z, X), parent(Z, Y), parent(W, X), parent(W, Y), Z \= W, X \= Y.
+brother(X, Y) :- male(X), sibling(X, Y).    
+sister(X, Y) :- female(X), sibling(X, Y).
+% brother(mike, henry).
+% sister(ann, paula).   
 
 % uncle and aunt relationships
 uncle(X, Y) :- male(X), sibling(X, Z), parent(Z, Y).
 aunt(X, Y) :- female(X), sibling(X, Z), parent(Z, Y).
+% uncle(mike, bob).
+% aunt(ann, sue).
+
+% nephew and niece relationships
+nephew(X, Y) :- male(X), parent(Z, Y), sibling(Z, W), parent(W, X).
+niece(X, Y) :- female(X), parent(Z, Y), sibling(Z, W), parent(W, X).
+% nephew(bob, mike).
+% niece(sue, ann).
+
+% uncle-in-law and aunt-in-law relationships
+uncle_in_law(X, Y) :- married(X, Z), sibling(Z, W), parent(W, Y).
+aunt_in_law(X, Y) :- married(X, Z), sibling(Z, W), parent(W, Y). 
+% uncle_in_law(mike, bob).
+% aunt_in_law(ann, sue).
+
+% half-sibling relationships
+half_sibling(X, Y) :- parent(Z, X), parent(Z, Y), parent(W, X), parent(V, Y), W \= V, X \= Y.   
+% half_sibling(mike, henry).
+
 
 % cousin relationships
 cousin(X, Y) :- parent(Z, X), parent(W, Y), sibling(Z, W).
+% cousin(john, mike).
 
 % in-law relationships
 father_in_law(X, Y) :- male(X), married(Y, Z), parent(X, Z).
 mother_in_law(X, Y) :- female(X), married(Y, Z), parent(X, Z).
+brother_in_law(X, Y) :- male(X), married(Y, Z), sibling(X, Z).
+sister_in_law(X, Y) :- female(X), married(Y, Z), sibling(X, Z).
+% father_in_law(john, bob).
+% mother_in_law(liz, sue).
+% brother_in_law(mike, sue).
+% sister_in_law(ann, bob).
 
 % age comparison
 older(X, Y) :- birth_date(X, DX), birth_date(Y, DY), DX < DY.
 younger(X, Y) :- birth_date(X, DX), birth_date(Y, DY), DX > DY. 
+% older(john, mike).
 
 current_year(2025).
 age(X, Age) :- birth_date(X, BirthYear), current_year(CurrentYear), Age is CurrentYear - BirthYear.
+% age(john, Age).
 
 
 % divorce facts
 divorced(mike, ann, 1920).
 divorced(tom, pat, 1935).
 divorced(david, mary, 1960).
+% divorced(alex, kate, 1900).
 
 % currently married predicate
 currently_married(X, Y) :- married(X, Y), \+ divorced(X, Y, _).
 currently_married(X, Y) :- married(Y, X), \+ divorced(Y, X, _).
+% currently_married(bob, sue).
 
 % alive predicate
 alive(X) :- \+ dead(X).
+% alive(john).
 
 % widow/widower predicate
 widow(X) :- female(X), (married(X, Y);married(Y, X)), dead(Y).
 widower(X) :- male(X), (married(X, Y);married(Y, X)), dead(Y).
+% widow(liz).
+% widower(john).
+
+% ancestor predicate
+ancestor(X, Y) :- parent(X, Y).
+ancestor(X, Y) :- parent(Z, Y), ancestor(X, Z).
+% ancestor(john, bob).
+
+
+% top level ancestors
+top_level_ancestor(X) :- ancestor(X, _), \+ parent(_, X).
+% top_level_ancestor(john).
+
+
+% print family tree
+print_family_tree(X, Level) :- 
+    tab(Level), write(X), nl,
+    findall(Child, parent(X, Child), Children),
+    NewLevel is Level + 4,
+    print_children(Children, NewLevel).
+
+print_children([], _).
+print_children([Child|Rest], Level) :-
+    print_family_tree(Child, Level),
+    print_children(Rest, Level).
+% print_family_tree(john,0).
+
