@@ -225,16 +225,73 @@ top_level_ancestor(X) :- ancestor(X, _), \+ parent(_, X).
 % top_level_ancestor(john).
 
 
-% print family tree
-print_family_tree(X, Level) :- 
-    tab(Level), write(X), nl,
-    findall(Child, parent(X, Child), Children),
-    NewLevel is Level + 4,
-    print_children(Children, NewLevel).
+% print list
+print_list([H|T]) :-
+    write(H), nl,
+    print_list(T).
 
-print_children([], _).
-print_children([Child|Rest], Level) :-
-    print_family_tree(Child, Level),
-    print_children(Rest, Level).
-% print_family_tree(john,0).
+% print family members
+print_family_members :-
+    findall(X, (male(X); female(X)), Members),  print_list(Members).
+
+% print male
+print_males :-
+    findall(X, male(X), Males), print_list(Males).
+
+% print female
+print_females :-    
+    findall(X, female(X), Females), print_list(Females).
+
+% print grandparents
+print_grandparents :-
+    findall(X, grandparent(X, _), Gparents), print_list(Gparents).
+
+% print siblings
+print_siblings :-
+    findall((X, Y), sibling(X, Y), Siblings), print_list(Siblings).
+
+% print uncales
+print_uncales :-
+    findall((X, Y), uncle(X, Y), Uncales), print_list(Uncales).
+
+% print aunts
+print_aunts :-
+    findall((X, Y), aunt(X, Y), Aunts), print_list(Aunts).
+
+% print cousins
+print_cousins :-
+    findall((X, Y), cousin(X, Y), Cousins), print_list(Cousins).
+
+% print ancestors
+print_ancestors :-  
+    findall((X, Y), ancestor(X, Y), Ancestors), print_list(Ancestors).
+% print top level ancestors
+print_top_level_ancestors :-
+    findall(X, top_level_ancestor(X), TopLevelAncestors), print_list(TopLevelAncestors).
+
+% print currently married couples
+print_currently_married :-
+    findall((X, Y), currently_married(X, Y), MarriedCouples), print_list(MarriedCouples).
+
+% print widows and widowers
+print_widows_widowers :-
+    findall(X, widow(X), Widows), print_list(Widows),
+    findall(Y, widower(Y), Widowers), print_list(Widowers).
+
+% print alive members
+print_alive_members :-
+    findall(X, alive(X), AliveMembers), print_list(AliveMembers).   
+
+% print ages of membeers
+print_ages :-
+    findall((X, Age), age(X, Age), Ages), print_list(Ages).
+
+% print divorced couples
+print_divorced_couples :-
+    findall((X, Y, Year), divorced(X, Y, Year), DivorcedCouples), print_list(DivorcedCouples).
+
+
+% priny birthdates
+print_birthdates :-
+    findall((X, Year), birth_date(X, Year), Birthdates), print_list(Birthdates).
 
